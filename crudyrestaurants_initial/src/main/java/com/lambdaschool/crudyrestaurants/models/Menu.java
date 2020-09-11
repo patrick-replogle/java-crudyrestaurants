@@ -1,5 +1,7 @@
 package com.lambdaschool.crudyrestaurants.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 
 @Entity
@@ -15,7 +17,9 @@ public class Menu
     private double price;
 
     @ManyToOne
-    @JoinColumn(name = "restaurantid", nullable = false)
+    @JoinColumn(name = "restaurantid",
+            nullable = false)
+    @JsonIgnoreProperties(value = "menus", allowSetters = true)
     private Restaurant restaurant;
 
     public Menu()

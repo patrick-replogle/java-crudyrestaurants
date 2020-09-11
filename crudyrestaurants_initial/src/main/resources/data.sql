@@ -18,7 +18,8 @@ INSERT INTO payments (paymentid, type)
 INSERT INTO restaurants (restaurantid, name, address, city, state, telephone, seatcapacity)
     VALUES (1, 'Apple', '123 Main Street', 'City', 'ST', '555-555-1234', 15),
            (2, 'Eagle Cafe', '321 Uptown Drive', 'Town', 'ST', '555-555-5555', 24),
-           (3, 'Number 1 Eats', '565 Side Avenue', 'Village', 'ST', '555-123-1555', 37);
+           (3, 'Number 1 Eats', '565 Side Avenue', 'Village', 'ST', '555-123-1555', 37),
+           (4, 'Food Cafe', '555 Street', 'Town', 'ST', '555-555-5555', 2);
 
 INSERT INTO restaurantpayments
     VALUES (1, 1),
@@ -26,7 +27,8 @@ INSERT INTO restaurantpayments
            (1, 3),
            (2, 3),
            (3, 2),
-           (3, 3);
+           (3, 3),
+           (4, 1);
 
 INSERT INTO menus (menuid, dish, price, restaurantid)
     VALUES (4, 'Mac and Cheese', 6.95, 1),
@@ -36,7 +38,8 @@ INSERT INTO menus (menuid, dish, price, restaurantid)
            (8, 'Chef Salad', 12.50, 1),
            (9, 'Tacos', 10.49, 2),
            (10, 'Barbacoa', 12.75, 2),
-           (11, 'Pizza', 15.15, 3);
+           (11, 'Pizza', 15.15, 3),
+           (12, 'Burrito', 15.15, 5);
 
 /*
 We must tell hibernate the ids that have already been used.
