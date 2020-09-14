@@ -26,4 +26,11 @@ public class PaymentServicesImpl
     {
         return paymentrepos.save(payment);
     }
+
+    @Transactional
+    @Override
+    public void deleteAllPayments()
+    {
+        paymentrepos.deleteAll();
+    }
 }

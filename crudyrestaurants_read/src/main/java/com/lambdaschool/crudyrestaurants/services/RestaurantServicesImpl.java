@@ -5,7 +5,10 @@ package com.lambdaschool.crudyrestaurants.services;
  * Taken from https://stackoverflow.com/questions/11671989/best-practice-for-javadocs-interface-implementation-or-both?lq=1
  */
 
+import com.lambdaschool.crudyrestaurants.models.Menu;
+import com.lambdaschool.crudyrestaurants.models.Payment;
 import com.lambdaschool.crudyrestaurants.models.Restaurant;
+import com.lambdaschool.crudyrestaurants.repositories.PaymentRepository;
 import com.lambdaschool.crudyrestaurants.repositories.RestaurantRepository;
 import com.lambdaschool.crudyrestaurants.views.MenuCounts;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +32,9 @@ public class RestaurantServicesImpl
      */
     @Autowired
     private RestaurantRepository restrepos;
+
+    @Autowired
+    private PaymentRepository paymentrepos;
 
     @Override
     public List<Restaurant> findAllRestaurants()
@@ -98,6 +104,129 @@ public class RestaurantServicesImpl
     @Override
     public Restaurant save(Restaurant restaurant)
     {
-        return restrepos.save(restaurant);
+        Restaurant newRestaurant = new Restaurant();
+
+        if (restaurant.getRestaurantid() != 0)
+        {
+            findRestaurantById(restaurant.getRestaurantid());
+            newRestaurant.setRestaurantid(restaurant.getRestaurantid());
+        }
+        // extra validation below
+        // single value fields
+        newRestaurant.setName(restaurant.getName());
+        newRestaurant.setAddress(restaurant.getAddress());
+        newRestaurant.setCity(restaurant.getCity());
+        newRestaurant.setState(restaurant.getState());
+        newRestaurant.setTelephone(restaurant.getTelephone());
+        newRestaurant.setSeatcapacity(restaurant.getSeatcapacity());
+
+        // collections
+        newRestaurant.getPayments().clear();
+        for (Payment p : restaurant.getPayments())
+        {
+            Payment newPayment = paymentrepos.findById(p.getPaymentid())
+                    .orElseThrow(() -> new EntityNotFoundException("Payment " + p.getPaymentid() + " not found!"));
+
+            newRestaurant.getPayments().add(newPayment);
+        }
+
+        newRestaurant.getMenus().clear();
+        // menus
+        for (Menu m : restaurant.getMenus())
+        {
+            Menu newMenu = new Menu(m.getDish(), m.getPrice(), newRestaurant);
+
+            newRestaurant.getMenus().add(newMenu);
+        }
+
+        return restrepos.save(newRestaurant);
+    }
+
+    @Transactional
+    @Override
+    public void deleteAllRestaurants()
+    {
+        restrepos.deleteAll();
+    }
+
+    @Transactional
+    @Override
+    public void delete(long restaurantid)
+    {
+        if (restrepos.findById(restaurantid).isPresent())
+        {
+            restrepos.deleteById(restaurantid);
+        } else
+        {
+            throw new EntityNotFoundException("Restaurant " + restaurantid + " not found!");
+        }
+    }
+
+    @Transactional
+    @Override
+    public Restaurant update(Restaurant restaurant, long restid)
+    {
+        Restaurant updateRestaurant = findRestaurantById(restid);
+
+        // extra validation below
+        // single value fields
+        if (restaurant.getName() != null)
+        {
+            updateRestaurant.setName(restaurant.getName());
+        }
+
+        if (restaurant.getAddress() != null)
+        {
+            updateRestaurant.setAddress(restaurant.getAddress());
+        }
+
+        if (restaurant.getCity() != null)
+        {
+            updateRestaurant.setCity(restaurant.getCity());
+        }
+
+        if (restaurant.getState() != null)
+        {
+            updateRestaurant.setState(restaurant.getState());
+        }
+
+        if (restaurant.getTelephone() != null)
+        {
+            updateRestaurant.setTelephone(restaurant.getTelephone());
+        }
+
+        if (restaurant.hasvalueforseatcapacity)
+        {
+            updateRestaurant.setSeatcapacity(restaurant.getSeatcapacity());
+        }
+
+        // collections
+        if (restaurant.getPayments().size() > 0)
+        {
+            updateRestaurant.getPayments()
+                    .clear();
+            for (Payment p : restaurant.getPayments())
+            {
+                Payment newPayment = paymentrepos.findById(p.getPaymentid())
+                        .orElseThrow(() -> new EntityNotFoundException("Payment " + p.getPaymentid() + " not found!"));
+
+                updateRestaurant.getPayments()
+                        .add(newPayment);
+            }
+        }
+
+        if (restaurant.getMenus().size() > 0)
+        {
+            updateRestaurant.getMenus().clear();
+            // menus
+            for (Menu m : restaurant.getMenus())
+            {
+                Menu newMenu = new Menu(m.getDish(), m.getPrice(), updateRestaurant);
+
+                updateRestaurant.getMenus().add(newMenu);
+            }
+        }
+
+        return restrepos.save(updateRestaurant);
     }
 }
