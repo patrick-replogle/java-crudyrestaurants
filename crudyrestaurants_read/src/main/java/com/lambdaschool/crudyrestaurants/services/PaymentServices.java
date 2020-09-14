@@ -18,4 +18,6 @@ public interface PaymentServices
      * @return the saved payment object including any automatically generated fields
      */
     Payment save(Payment payment);
+
+    void deleteAllPayments();
 }

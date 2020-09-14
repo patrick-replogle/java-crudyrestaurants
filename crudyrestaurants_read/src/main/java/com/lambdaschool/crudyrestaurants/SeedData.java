@@ -53,6 +53,9 @@ public class SeedData implements CommandLineRunner
     @Override
     public void run(String[] args)
     {
+        restaurantServices.deleteAllRestaurants();
+        paymentServices.deleteAllPayments();
+
         Payment pay1 = new Payment("Cash");
         pay1 = paymentServices.save(pay1);
         Payment pay2 = new Payment("Credit Card");
